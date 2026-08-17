@@ -72,18 +72,21 @@ go run ./cmd/server
 
 #### GET — список всех задач
 
+powershell
 ```powershell
 Invoke-RestMethod -Uri http://localhost:8081/tasks -Method GET
 ```
+curl
 ```curl
 curl http://localhost:8081/tasks
 ```
+браузер
 ```в браузере
 http://localhost:8081/tasks
 ```
 
 #### POST — создание задачи
-
+powershell
 ```powershell
 $body = @{
     title = "Buy milk"
@@ -93,22 +96,24 @@ $body = @{
 $r = Invoke-WebRequest -Uri http://localhost:8081/tasks -Method POST -ContentType "application/json" -Body $body -UseBasicParsing
 $r.Content
 ```
+curl
 ```curl
 curl -X POST http://localhost:8081/tasks \
   -H "Content-Type: application/json" \
   -d '{"title": "Buy milk", "done": false}'
 ```
 #### GET — получение задачи по ID
-
+powershell
 ```powershell
 Invoke-RestMethod -Uri http://localhost:8081/tasks/1 -Method GET
 ```
+curl
 ```curl
 curl http://localhost:8081/tasks/1
 ```
 
 #### PUT — обновление задачи
-
+powershell
 ```powershell
 $body = @{
     title = "Buy coffee"
@@ -118,6 +123,7 @@ $body = @{
 $r = Invoke-WebRequest -Uri http://localhost:8081/tasks/1 -Method PUT -ContentType "application/json" -Body $body -UseBasicParsing
 $r.Content
 ```
+curl
 ```curl
 curl -X PUT http://localhost:8081/tasks/1 \
   -H "Content-Type: application/json" \
@@ -125,11 +131,12 @@ curl -X PUT http://localhost:8081/tasks/1 \
 ```
 
 #### DELETE — удаление задачи
-
+powershell
 ```powershell
 $r = Invoke-WebRequest -Uri http://localhost:8081/tasks/1 -Method DELETE -UseBasicParsing
 $r.StatusCode
 ```
+curl
 ```curl
 curl -X DELETE http://localhost:8081/tasks/1 -v
 ```
