@@ -2,6 +2,7 @@ package storage
 
 import (
 	"errors"
+	"sort"
 	"sync"
 	"tasks-api/internal/models"
 	"time"
@@ -33,11 +34,19 @@ func NewCache() *Cache {
 func (c *Cache) List() []models.Task {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	list := make([]models.Task, 0, len(c.tasks))
-	for _, task := range c.tasks {
-		list = append(list, task)
+	// как сортировать map подсказал ИИ
+	ids := make([]int, 0, len(c.tasks))
+	for id := range c.tasks {
+		ids = append(ids, id)
 	}
-	return list
+	sort.Ints(ids)
+
+	result := make([]models.Task, 0, len(ids))
+	for _, id := range ids {
+		result = append(result, c.tasks[id])
+	}
+
+	return result
 }
 
 func (c *Cache) Create(task models.Task) (models.Task, error) {
@@ -45,13 +54,14 @@ func (c *Cache) Create(task models.Task) (models.Task, error) {
 	defer c.mu.Unlock()
 	task.ID = c.nextID
 	c.nextID++
-	if task.ID == 0 {
-		return models.Task{}, ErrTaskCreate
-	}
 	if task.CreatedAt == "" {
 		task.CreatedAt = time.Now().Format(time.RFC3339)
 	}
 	c.tasks[task.ID] = task
+	if _, ok := c.tasks[task.ID]; !ok {
+		// сюда мы попадём только если что‑то пошло совсем не так
+		return models.Task{}, ErrTaskCreate
+	}
 	return task, nil
 }
 
@@ -71,6 +81,9 @@ func (c *Cache) Update(id int, task models.Task) (models.Task, error) {
 	}
 	task.ID = oldTask.ID
 	task.CreatedAt = oldTask.CreatedAt
+	if task.CreatedAt == "" {
+		task.CreatedAt = time.Now().Format(time.RFC3339)
+	}
 	c.tasks[id] = task
 	return task, nil
 }

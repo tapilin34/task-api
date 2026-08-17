@@ -30,8 +30,6 @@
 ├── internal
 │   ├── handlers
 │   │   └── task.go
-│   ├── http
-│   │   └── middleware.go(не реализовал, но принцип понял, что нужно перенести логику из /internal/handlers/task.go)
 │   ├── models
 │   │   └── task.go
 │   └── storage
@@ -185,7 +183,16 @@ curl -X DELETE http://localhost:8081/tasks/1 -v
   "error": "Метод не поддерживается"
 }
 ```
-
+Эндпоинты 
+```Endpoint
+| Метод  | Путь        | Описание                | Коды ответов                                     |
+| ------ | ----------- | ----------------------- | ------------------------------------------------ |
+| GET    | /tasks      | Список всех задач       | 200 OK                                           |
+| POST   | /tasks      | Создание новой задачи   | 201 Created, 400 Bad Request, 500 Internal Error |
+| GET    | /tasks/{id} | Получение задачи по ID  | 200 OK, 400 Bad Request, 404 Not Found           |
+| PUT    | /tasks/{id} | Обновление задачи по ID | 200 OK, 400 Bad Request, 404 Not Found, 500      |
+| DELETE | /tasks/{id} | Удаление задачи по ID   | 204 No Content, 400 Bad Request, 404 Not Found   |
+```
 ## Архитектура
 
 - `handlers` — HTTP хендлеры (`TasksCollection`, `TaskItem`)
